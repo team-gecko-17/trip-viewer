@@ -4,11 +4,12 @@ on:
   pull_request:
     paths:
     - 'apis/poi/**'
+  push:
+    paths:
+    - 'apis/poi/**'
 
-
-    
 jobs:
-  build:
+  POI-build-and-unittest:
 
     runs-on: ubuntu-latest
 
