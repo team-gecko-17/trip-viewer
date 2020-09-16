@@ -1,7 +1,7 @@
 ---
-name: Custom issue template
-about: Describe this issue template's purpose here.
-title: ''
+name: Build Issue Template
+about: This template is used to create an issue automatically as a result of a build
+title: Build Issue
 labels: ''
 assignees: ''
 
