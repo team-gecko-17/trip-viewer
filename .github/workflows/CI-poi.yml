@@ -13,13 +13,14 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy: 
+      matrix: 
+        dotnet: ['2.1.5','3.1.301']
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.301
     - name: Install dependencies
       run: dotnet restore
     - name: Build
