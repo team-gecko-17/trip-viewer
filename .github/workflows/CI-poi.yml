@@ -4,8 +4,7 @@ on:
   pull_request:
     paths:
     - '/apis/poi/**'
-    paths-ignore:
-    - '/apis/poi/**.md'
+
 
 jobs:
   build:
