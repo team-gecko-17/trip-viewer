@@ -31,6 +31,8 @@ jobs:
       if: ${{ failure() }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        filename: .github/ISSUE_TEMPLATE/custom.md
       id: create-issue
     - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
     - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
