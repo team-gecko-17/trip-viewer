@@ -123,7 +123,7 @@ jobs:
 
   swap_rollback:
     runs-on: ubuntu-latest
-    if: failure()
+    if: ${{ validate_production.status == 'failure'}}
     steps:
       - name: Azure Login
         uses: Azure/login@v1
