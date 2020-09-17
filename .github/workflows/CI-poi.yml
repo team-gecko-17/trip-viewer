@@ -1,4 +1,7 @@
 name: CI-poi
+env:
+  registry: openhack25g1cxh1acr.azurecr.io
+  repository: devopsoh/api-poi
 
 on:
   pull_request:
@@ -64,12 +67,15 @@ jobs:
           login-server: ${{ secrets.ACR_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      - run: |
-          docker build -t ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
-          docker push ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+
+      - name: Docker build
+        run: docker build -t $registry/$repository:${{github.run_number}} --build-arg build_version=${{github.run_number}} $docker_path
+
+      - name: Docker Push
+        run: docker push $registry/$repository:${{github.run_number}}
 
       - name: 'Deploy to Azure Web App for Container'
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'openhack25g1cxh1poi-staging'
-          images: ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+          images: $registry/$repository:${{github.run_number}}
