@@ -71,3 +71,9 @@ jobs:
       run: docker build -t $registry/$repository:${{github.run_number}} --build-arg build_version=${{github.run_number}} $docker_path
     - name: Docker Push
       run: docker push $registry/$repository:${{github.run_number}}
+
+    - name: 'Deploy to Azure Web App for Container'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: $app_name
+        images: $registry/$repository:${{github.run_number}}
