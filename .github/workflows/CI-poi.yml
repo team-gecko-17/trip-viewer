@@ -51,33 +51,23 @@ jobs:
     - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
     - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
 
-  POI-deploy:
+  docker_build_and_push:
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
-
-    steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@master
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.ACR_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Docker build
-        run: docker build -t $registry/$repository:${{github.run_number}} --build-arg build_version=${{github.run_number}} $docker_path
-
-      - name: Docker Push
-        run: docker push $registry/$repository:${{github.run_number}}
-
-      - name: 'Deploy to Azure Web App for Container'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: $app_name
-          images: $registry/$repository:${{github.run_number}}
+    needs: build_and_test
+    steps:     
+    - uses: actions/checkout@v2
+    - name: Docker login
+      uses: Azure/docker-login@v1     
+      with:
+        #ACR name
+        username: ${{ secrets.ACR_USERNAME }}
+        #ACR password
+        password: ${{ secrets.ACR_PASSWORD }}
+        #ACR URL
+        login-server: ${{ secrets.ACR_SERVER }}
+      #run: docker login $registry -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.GITHUBTOKEN }}
+    - name: Docker build
+      run: docker build -t $registry/$repository:${{github.run_number}} --build-arg build_version=${{github.run_number}} $docker_path
+    - name: Docker Push
+      run: docker push $registry/$repository:${{github.run_number}}
