@@ -119,7 +119,7 @@ jobs:
         uses: lakuapik/gh-actions-http-status@v1
         with:
           sites: '["https://openhacksf39htz4poi.azurewebsites.net/api/healthcheck/poi"]'
-          expected: '[200]'
+          expected: '[500]'
 
   swap_rollback:
     runs-on: ubuntu-latest
