@@ -19,6 +19,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -44,3 +45,35 @@ jobs:
       id: create-issue
     - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
     - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
+
+  POI-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@master
+
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+            inlineScript: |
+              echo "Building API-POI image..."
+              echo "Changing directory to /apis/poi/web..."
+              cd "./apis/poi/web"
+              az acr build --image "devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}" --registry ${{ secrets.ACR_USERNAME }} --file Dockerfile .
+      - name: 'Deploy to Azure Web App for Container'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'openhack25g1cxh1poi-staging'
+          images: ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
