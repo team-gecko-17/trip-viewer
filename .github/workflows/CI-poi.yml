@@ -19,6 +19,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -44,3 +45,31 @@ jobs:
       id: create-issue
     - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
     - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
+
+  POI-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@master
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - run: |
+          docker build .t ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+          docker push ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+
+      - name: 'Deploy to Azure Web App for Container'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'openhack25g1cxh1poi-staging'
+          images: ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
