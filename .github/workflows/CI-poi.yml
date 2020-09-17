@@ -2,6 +2,7 @@ name: CI-poi
 env:
   registry: openhack25g1cxh1acr.azurecr.io
   repository: devopsoh/api-poi
+  docker_path: apis/poi/web
 
 on:
   pull_request:
