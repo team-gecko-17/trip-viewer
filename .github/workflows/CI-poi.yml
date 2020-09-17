@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       - run: |
-          docker build .t ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+          docker build -t ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
           docker push ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
 
       - name: 'Deploy to Azure Web App for Container'
