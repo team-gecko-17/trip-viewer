@@ -2,11 +2,17 @@ name: CI-poi
 
 on:
   pull_request:
+    branches:
+    - 'master'
     paths:
     - 'apis/poi/**'
+    - '.github/workflows/CI-poi.yml' 
   push:
+    branches:
+    - 'master'
     paths:
     - 'apis/poi/**'
+    - '.github/workflows/CI-poi.yml'
 
 jobs:
   POI-build-and-unittest:
