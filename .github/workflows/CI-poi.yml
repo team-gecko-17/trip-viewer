@@ -3,7 +3,7 @@ env:
   registry: openhacksf39htz4acr.azurecr.io
   repository: devopsoh/api-poi
   docker_path: apis/poi/web
-  app_name: openhacksf39htz4poi-staging
+  app_name: openhacksf39htz4poi
 
 on:
   pull_request:
@@ -81,4 +81,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: $app_name
+        slot-name: staging
         images: $registry/$repository:${{github.run_number}}
