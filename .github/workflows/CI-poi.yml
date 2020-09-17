@@ -54,24 +54,20 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@master
 
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.ACR_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-            inlineScript: |
-              echo "Building API-POI image..."
-              echo "Changing directory to /apis/poi/web..."
-              cd "./apis/poi/web"
-              az acr build --image "devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}" --registry ${{ secrets.ACR_USERNAME }} --file Dockerfile .
+      - run: |
+          docker build .t ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+          docker push ${{ secrets.ACR_SERVER }}/devopsoh/api-poi:${{ env.GITHUB_RUN_ID }}
+
       - name: 'Deploy to Azure Web App for Container'
         uses: azure/webapps-deploy@v2
         with:
