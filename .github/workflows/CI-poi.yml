@@ -1,8 +1,9 @@
 name: CI-poi
 env:
-  registry: openhack25g1cxh1acr.azurecr.io
+  registry: openhacksf39htz4acr.azurecr.io
   repository: devopsoh/api-poi
   docker_path: apis/poi/web
+  app_name: openhacksf39htz4poi-staging
 
 on:
   pull_request:
@@ -78,5 +79,5 @@ jobs:
       - name: 'Deploy to Azure Web App for Container'
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'openhack25g1cxh1poi-staging'
+          app-name: $app_name
           images: $registry/$repository:${{github.run_number}}
